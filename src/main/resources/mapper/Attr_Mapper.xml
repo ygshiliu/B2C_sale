@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wnn.mydao.Attr_Mapper">
+
+	<resultMap type="com.wnn.mybean.Object_T_mall_attr" id="select_attr_by_class_2_map">
+		<id column="attr_id" property="id"/>
+		<result column="shxm_mch" property="shxm_mch"/>
+		<result column="flbh2" property="flbh2"/>
+		<result column="chjshj" property="chjshj"/>
+		<result column="shfqy" property="shfqy"/>
+		<collection property="list_value" ofType="com.wnn.mybean.T_mall_value" >
+			<id column="val_id" property="Id"/>
+			<result column="shxzh" property="shxzh"/>
+			<result column="shfqy" property="shfqy"/>
+			<result column="shxzh_mch" property="shxzh_mch"/>
+			<result column="chjshj" property="chjshj"/>
+			<result column="shxm_id" property="shxm_id"/>
+		</collection>
+	</resultMap>
+	<select id="select_attr_by_class_2" resultMap="select_attr_by_class_2_map">
+		select attr.id attr_id,value.id val_id ,attr.*,value.* from t_mall_attr attr,t_mall_value value 
+		where value.shxm_id=attr.id and flbh2=#{flbh2_id}
+	</select>
+	
+	<insert id="insert_attr" parameterType="com.wnn.mybean.Object_T_mall_attr"  
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		insert into t_mall_attr(shxm_mch,flbh2)
+		values(
+			#{shxm_mch},
+			#{flbh2   }
+		)
+		
+	</insert>
+	
+	<insert id="insert_value" parameterType="com.wnn.mybean.T_mall_value">
+		insert into t_mall_value(
+			shxzh,
+			shxm_id,
+			shxzh_mch
+			
+		)
+		values
+		<foreach collection="list_value" item="value" separator=",">
+			(
+				#{value.shxzh     },
+				#{id },
+				#{value.shxzh_mch }
+			)
+		</foreach>
+	</insert>
+</mapper>

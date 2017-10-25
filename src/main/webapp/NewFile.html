@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var file = document.getElementById("file");
+		console.log(file);
+		//var $file = $("#file");
+		var ss=$("#file")[0].files[0];
+		console.log(ss);
+		//console("===="+$file[0]);
+	})
+
+</script>
+</head>
+<body>
+	<input type="file" id="file" >
+	<img src="img/upload_hover.png" style="cursor:pointer;" />
+</body>
+</html>

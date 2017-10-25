@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wnn.mydao.Search_Mapper">
+
+	<select id="select_sku_by_spu_id" parameterType="int" resultType="com.wnn.mybean.T_mall_sku">
+		select * from t_mall_sku where shp_id = #{shp_id}
+	</select>
+
+	<select id="select_sku_by_id" parameterType="int"  resultMap="select_sku_map">
+		select spu.Id spu_id,sku.id sku_id,sav.Id sav_id,img.Id img_id ,attr.Id attr_id,val.Id val_id,
+		concat(val.shxzh,val.shxzh_mch) shxzh_mch,spu.*,sku.*,sav.*,img.*,attr.*,val.*
+		from 
+		t_mall_product spu,
+		t_mall_sku sku,
+		t_mall_sku_attr_value sav,
+		t_mall_product_image img,
+		t_mall_attr attr,
+		t_mall_value val
+		where 
+		sku.shp_id = spu.Id
+		and sav.sku_id = sku.Id
+		and img.shp_id = spu.Id
+		and sav.shxm_id=attr.Id
+		and sav.shxzh_id = val.Id
+		and sku.Id=#{sku_id}
+	</select>
+	<resultMap type="com.wnn.mybean.Object_T_mall_sku" id="select_sku_map" autoMapping="true">
+		<id property="id" column="sku_id"/>
+		<association property="t_mall_product" javaType="com.wnn.mybean.T_mall_product" autoMapping="true">
+			<id property="id" column="spu_id"/>
+		</association>
+		<collection property="sku_attr_list" ofType="com.wnn.mybean.T_mall_sku_attr_value" autoMapping="true">
+			<id property="id" column="sav_id"/>
+		</collection>
+		<collection property="product_image_list" ofType="com.wnn.mybean.T_mall_product_image" autoMapping="true">
+			<id property="id" column="img_id"/>
+		</collection>
+		<collection property="attr_list" ofType="com.wnn.mybean.Object_T_mall_attr" autoMapping="true">
+			<id property="id" column="attr_id"/>
+			<collection property="list_value" ofType="com.wnn.mybean.T_mall_value" autoMapping="true">
+				<id property="id" column="val_id"/>
+			</collection>
+		</collection>
+	</resultMap>
+
+	<select id="select_sku_by_attr" resultMap="select_sku_by_class_2_map">
+		SELECT spu.id spu_id,sku.`Id` sku_id,skuattr.`Id` skuattr_id,tmc.`Id` tmc_id,tm.`Id` tm_id,
+		sku.*,spu.*,skuattr.*,tm.*
+		FROM 
+		`t_mall_product` spu,
+		`t_mall_sku` sku,
+		`t_mall_sku_attr_value` skuattr,
+		`t_mall_tm_class` tmc,
+		`t_mall_trade_mark` tm
+		WHERE
+		sku.`shp_id`=spu.`Id`
+		AND spu.`flbh1` = tmc.`flbh1`
+		AND tmc.`pp_id`=tm.`Id`
+		AND sku.id = skuattr.`sku_id`
+		AND spu.`pp_id` = tm.`Id`
+		AND spu.`flbh2`=#{class_2_id}
+		<if test="list_av!=null &amp;&amp; list_av.size()>0">
+			AND sku.id IN (
+			SELECT sku_0.sku_id FROM 
+			<foreach collection="list_av" item="attr_value" index="i" separator=",">
+				(SELECT sku_id FROM t_mall_sku_attr_value WHERE shxm_id=#{attr_value.shxm_id} AND shxzh_id =#{attr_value.shxzh_id}) sku_#{i}
+			</foreach>
+			<if test="list_av.size()>1">
+				<where>
+					<foreach collection="list_av_and" index="i" item="av_and" separator="and">
+						<if test="i &lt;(list_av.size()-1)" >
+							sku_#{i}.sku_id = sku_#{av_and}.sku_id
+						</if>
+					</foreach>
+				</where>
+			</if>
+			)
+		</if>
+		
+	</select>
+	<select id="select_sku_by_class_2" resultMap="select_sku_by_class_2_map">
+		
+		SELECT spu.id spu_id,sku.`Id` sku_id,skuattr.`Id` skuattr_id,tmc.`Id` tmc_id,tm.`Id` tm_id,
+		sku.*,spu.*,skuattr.*,tm.*
+		FROM 
+		`t_mall_product` spu,
+		`t_mall_sku` sku,
+		`t_mall_sku_attr_value` skuattr,
+		`t_mall_tm_class` tmc,
+		`t_mall_trade_mark` tm
+		WHERE
+		sku.`shp_id`=spu.`Id`
+		AND spu.`flbh1` = tmc.`flbh1`
+		AND tmc.`pp_id`=tm.`Id`
+		AND sku.id = skuattr.`sku_id`
+		AND spu.`pp_id` = tm.`Id`
+		AND spu.`flbh2`=#{class_2_id}
+	</select>
+	
+	<resultMap type="com.wnn.mybean.Object_T_mall_sku" id="select_sku_by_class_2_map" autoMapping="true">
+		<id column="sku_id" property="id"/>
+		<association property="t_mall_product" javaType="com.wnn.mybean.T_mall_product" autoMapping="true">
+			<id column="spu_id" property="id"/>
+		</association>
+		<association property="T_mall_trade_mark" javaType="com.wnn.mybean.T_mall_trade_mark" autoMapping="true">
+			<id column="tm_id" property="id"/>
+		</association>
+		<collection property="sku_attr_list" ofType="com.wnn.mybean.T_mall_sku_attr_value" autoMapping="true">
+			<id column="skuattr_id" property="id"/>
+		</collection>
+		<collection property="product_image_list" ofType="com.wnn.mybean.T_mall_product_image" autoMapping="true">
+			<id column="img_id" property="id"/>
+		</collection>
+	</resultMap>
+</mapper>
