@@ -14,7 +14,6 @@
 </script>
 </head>
 <body>
-	${sku_list.size() }
 	<hr>
 	<c:forEach items="${sku_list }" var="sku">
 		<a href="${pageContext.request.contextPath }/get_sku_by_id.do?sku_id=${sku.id}&spu_id=${sku.shp_id}" target="_blank">

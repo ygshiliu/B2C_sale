@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.wnn.mybean.Model_T_mall_sku_attr_value;
 import com.wnn.mybean.Object_T_mall_attr;
@@ -30,6 +31,16 @@ public class SearchController {
 	@RequestMapping("get_sku_by_attr")
 	public String get_sku_by_attr(Integer class_2_id,Model_T_mall_sku_attr_value list_attr_value,String order,Map<String,Object> map){
 		List<Object_T_mall_sku> sku_list = searchService.get_sku_by_attr(class_2_id,list_attr_value,order);
+		map.put("sku_list", sku_list);
+		map.put("class_2_id", class_2_id);
+		return "sale_search_inner";
+	}
+	@RequestMapping("get_sku_by_attr1")
+	public String get_sku_by_attr1(Integer class_2_id,Model_T_mall_sku_attr_value list_attr_value1,String order,Map<String,Object> map){
+		
+//		Model_T_mall_sku_attr_value list_attr_value1=new Model_T_mall_sku_attr_value();
+		
+		List<Object_T_mall_sku> sku_list = searchService.get_sku_by_attr(class_2_id,list_attr_value1,order);
 		map.put("sku_list", sku_list);
 		map.put("class_2_id", class_2_id);
 		return "sale_search_inner";

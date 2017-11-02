@@ -15,30 +15,35 @@
 
 	function search_sku_attr_up(shxm_id,shxzh_id,obj){
 		$("#show_attr_eare_"+shxm_id).hide();
-		 $("#search_sku_attr_eare").append("<input id='attr_"+shxm_id+"' onclick='search_sku_attr_down("+shxm_id+")' type='text' name='attr' value='{\"shxm_id\":"+shxm_id+",\"shxzh_id\":"+shxzh_id+"}'/>")
+		 $("#search_sku_attr_eare").append("<input id='attr_"+shxm_id+"' onclick='search_sku_attr_down("+shxm_id+")' type='text' name='attr' value='"+shxm_id+"_"+shxzh_id+"'/>")
 		 get_sku_by_attr();
 	}
 	function search_sku_attr_down(shxm_id){
 		$("#show_attr_eare_"+shxm_id).show();
 		$("#attr_"+shxm_id).remove();
+		 get_sku_by_attr();
 	}
 	
 	function get_sku_by_attr(){
 		var query="";
 		var attr = $("#search_sku_attr_eare [name='attr']");
+		var array = new Array();
 		attr.each(function(i,item){
-			var jsonstr = $(item).val();
-			var json = $.parseJSON(jsonstr);
-			query+="list_attr_value["+i+"].shxm_id="+json.shxm_id+"&list_attr_value["+i+"].shxzh_id="+json.shxzh_id+"&";
+			var val = $(item).val();
+			console.dir("===>"+i);
+			array[i]=val;
 		})
 		var order = $("#search_sku_attr_eare [name='order']").val();
 		var class_2_id =${class_2_id};
-		query+="order="+order+"&class_2_id="+class_2_id;
 		
 		$.ajax({
 			type:"post",
-			url:"${pageContext.request.contextPath}/get_sku_by_attr.do",
-			data:query,
+			url:"${pageContext.request.contextPath}/get_sku_by_attr1.do",
+			data:{
+				"order":order,
+				"class_2_id":class_2_id,
+				"list_attr_value":array
+			},
 			success:function(data){
 				$("#search_inner").html(data);
 			}
@@ -67,8 +72,10 @@
 		 		<div id="show_attr_eare_${attr.id }">
 				"${attr.shxm_mch }" 属性：
 				<c:forEach items="${attr.list_value }" var="attr_value" varStatus="index">
-					<a href="javascript:search_sku_attr_up(${ attr.id},${attr_value.id});">${attr_value.shxzh }${attr_value.shxzh_mch }</a>&nbsp;&nbsp;&nbsp;
+					<input type="checkbox" name="" value="">${attr_value.shxzh }${attr_value.shxzh_mch }&nbsp;&nbsp;&nbsp;
+<%-- 					<a href="javascript:search_sku_attr_up(${ attr.id},${attr_value.id});">${attr_value.shxzh }${attr_value.shxzh_mch }</a>&nbsp;&nbsp;&nbsp; --%>
 				</c:forEach>
+				<button onclick="search_sku_attr_up(${ attr.id},${attr_value.id})">确认</button>
 				</div>
 			</c:forEach> 
 	</c:if>
